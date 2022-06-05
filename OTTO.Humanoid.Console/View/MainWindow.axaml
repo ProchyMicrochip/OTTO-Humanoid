@@ -1,0 +1,18 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OTTO.Humanoid.Console.ViewModel"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="OTTO.Humanoid.Console.View.MainWindow"
+        Title="MainWindow">
+    <Window.DataContext>  
+        <local:MainWindowViewModel/>  
+    </Window.DataContext>        
+    
+        <!--Image Source="{Binding Path=Image}" Width="600" Height="600"></Image-->
+        <Canvas x:Name="Mycanvas" Width="640" Height="480" HorizontalAlignment="Left" VerticalAlignment="Top">
+            
+        </Canvas>
+    
+</Window>
