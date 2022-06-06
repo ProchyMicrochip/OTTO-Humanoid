@@ -32,19 +32,14 @@
       <None Update="NLog.config">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="mediapipe\graphs\pose_tracking\pose_tracking_cpu.pbtxt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="mediapipe\graphs\pose_tracking\pose_tracking_gpu.pbtxt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-        <None Update="mediapipe\">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="qrcode.bmp">
+        <None Update="ffmpeg\**\*.*">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="mediapipe\**\*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
+    
 
     <ItemGroup>
       <ProjectReference Include="..\Mediapipe.Net\Mediapipe.Net.csproj" />

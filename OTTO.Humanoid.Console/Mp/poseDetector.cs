@@ -77,7 +77,8 @@ public sealed class PoseDetector : INotifyPropertyChanged
 
     private async void PoseThreadLoop()
     {
-        FFmpegManager.SetupFFmpeg(@"C:\ffmpeg\v5.0_x64\");
+        var path = Directory.GetCurrentDirectory() + @"\ffmpeg\v5.0_x64\";
+        FFmpegManager.SetupFFmpeg(path);
         Glog.Initialize("stuff");
         using var manager = new CameraManager();
         _camera = manager.GetDevice(1);

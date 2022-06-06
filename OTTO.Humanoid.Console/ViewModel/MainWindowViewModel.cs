@@ -50,7 +50,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    private Controls _canvasChildren;
+    private Controls _canvasChildren = null!;
 
     private NormalizedLandmarkList _landmarkList = null!;
 
