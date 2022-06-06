@@ -2,13 +2,11 @@
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Mediapipe.Net.Calculators;
-using Mediapipe.Net.External;
 using Mediapipe.Net.Framework.Format;
 using Mediapipe.Net.Framework.Protobuf;
 using NLog;
 using SeeShark;
 using SeeShark.Device;
-using SeeShark.FFmpeg;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
@@ -29,7 +27,6 @@ public sealed class PoseDetector : INotifyPropertyChanged
     private static BlazePoseCpuCalculator? _calculator;
     private readonly Logger _logger;
     private readonly CancellationToken _stoppingToken;
-
     /// <summary>
     /// 
     /// </summary>
@@ -64,10 +61,17 @@ public sealed class PoseDetector : INotifyPropertyChanged
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="stoppingToken"></param>
-    public PoseDetector(Logger logger, CancellationToken stoppingToken)
+    /// <param name="cameraInfo"></param>
+    public PoseDetector(Logger logger,CameraInfo cameraInfo, CancellationToken stoppingToken)
     {
         _stoppingToken = stoppingToken;
         _logger = logger;
+        using var manager = new CameraManager();
+        _camera = manager.GetDevice(cameraInfo);
+        _logger.Info("Using camera {Info}",_camera.Info);
+        _calculator = new BlazePoseCpuCalculator();
+        _calculator.OnResult += HandleLandmarks;
+        _calculator.Run();
         var poseThread = new Thread(PoseThreadLoop)
         {
             IsBackground = true,
@@ -77,15 +81,6 @@ public sealed class PoseDetector : INotifyPropertyChanged
 
     private async void PoseThreadLoop()
     {
-        var path = Directory.GetCurrentDirectory() + @"\ffmpeg\v5.0_x64\";
-        FFmpegManager.SetupFFmpeg(path);
-        Glog.Initialize("stuff");
-        using var manager = new CameraManager();
-        _camera = manager.GetDevice(1);
-        _logger.Info("Using camera {Info}",_camera.Info);
-        _calculator = new BlazePoseCpuCalculator();
-        _calculator.OnResult += HandleLandmarks;
-        _calculator.Run();
         while (!_stoppingToken.IsCancellationRequested)
         {
             //try
