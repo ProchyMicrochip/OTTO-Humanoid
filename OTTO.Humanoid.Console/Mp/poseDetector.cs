@@ -1,13 +1,10 @@
 ﻿using System.ComponentModel;
-using System.Drawing;
 using System.Runtime.CompilerServices;
-using FFmpeg.AutoGen;
 using JetBrains.Annotations;
 using Mediapipe.Net.Calculators;
 using Mediapipe.Net.External;
 using Mediapipe.Net.Framework.Format;
 using Mediapipe.Net.Framework.Protobuf;
-using Microsoft.Extensions.Logging;
 using NLog;
 using SeeShark;
 using SeeShark.Device;
@@ -24,45 +21,83 @@ namespace OTTO.Humanoid.Console.Mp;
 /// <summary>
 /// 
 /// </summary>
-public class PoseDetector : INotifyPropertyChanged
+public sealed class PoseDetector : INotifyPropertyChanged
 {
 
     private static Camera? _camera;
     private static FrameConverter? _converter;
     private static BlazePoseCpuCalculator? _calculator;
     private readonly Logger _logger;
-    private Image<Rgb24> _image;
+    private readonly CancellationToken _stoppingToken;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public IImage? Currentimage
+    { 
+        get => _currentimage;
+        set
+        {
+            _currentimage = value;
+            OnPropertyChanged(nameof(Currentimage));
+        } 
+    }
+
+    private IImage? _currentimage;
+    /// <summary>
+    /// 
+    /// </summary>
+    public NormalizedLandmarkList? Landmarks 
+    { 
+        get => _landmarks;
+        set
+        {
+            _landmarks = value;
+            OnPropertyChanged(nameof(Landmarks));
+        } 
+    }
+
     private NormalizedLandmarkList? _landmarks;
 
     /// <summary>
     /// 
     /// </summary>
-    public NormalizedLandmarkList? Landmarks
-    {
-        get => _landmarks;
-        private set
-        {
-            _landmarks = value;
-            OnPropertyChanged();
-        }
-    }
-    /// <summary>
-    /// 
-    /// </summary>
     /// <param name="logger"></param>
-    public PoseDetector(Logger logger)
+    /// <param name="stoppingToken"></param>
+    public PoseDetector(Logger logger, CancellationToken stoppingToken)
     {
-        (int, int)? videoSize = null;
+        _stoppingToken = stoppingToken;
+        _logger = logger;
+        var poseThread = new Thread(PoseThreadLoop)
+        {
+            IsBackground = true,
+        };
+        poseThread.Start();
+    }
+
+    private async void PoseThreadLoop()
+    {
         FFmpegManager.SetupFFmpeg(@"C:\ffmpeg\v5.0_x64\");
         Glog.Initialize("stuff");
-        _logger = logger;
-        MpOptions parsed = new MpOptions();
         using var manager = new CameraManager();
         _camera = manager.GetDevice(1);
         _logger.Info("Using camera {Info}",_camera.Info);
-        _calculator = new();
+        _calculator = new BlazePoseCpuCalculator();
         _calculator.OnResult += HandleLandmarks;
         _calculator.Run();
+        while (!_stoppingToken.IsCancellationRequested)
+        {
+            //try
+            //{
+                GetPose();
+                await Task.Delay(20, _stoppingToken);
+                /*}
+                catch (Exception exception)
+                {
+                    _logger.Error("{Message}",exception.Message); // log and restart workflow
+                }*/
+
+        }
     }
 
     /// <summary>
@@ -74,21 +109,28 @@ public class PoseDetector : INotifyPropertyChanged
         var frame = _camera.GetFrame();
         _converter ??= new FrameConverter(frame, PixelFormat.Rgb24);
 
-        Frame cFrame = _converter.Convert(frame);
-
-        using ImageFrame imgframe = new ImageFrame(ImageFormat.Srgb,
+        var cFrame = _converter.Convert(frame);
+        
+        using var imgframe = new ImageFrame(ImageFormat.Srgb,
             cFrame.Width, cFrame.Height, cFrame.WidthStep, cFrame.RawData);
         
         if (_calculator != null)
         {
             using var img = _calculator.Send(imgframe);
         }
-        _image = Image.LoadPixelData<Rgb24>(cFrame.RawData, cFrame.Width, cFrame.Height);
+        var image = Image.LoadPixelData<Rgb24>(cFrame.RawData, cFrame.Width, cFrame.Height);
+        using var ms = new MemoryStream();
+        image.SaveAsBmp(ms);
+        ms.Position = 0;
+        var bitmap = new Bitmap(ms);
+        Currentimage = bitmap;
     }
     private void HandleLandmarks(object? sender, NormalizedLandmarkList? landmarks)
     {
         Landmarks = landmarks;
-        _logger.Info("Got a list of {Count} landmarks at frame {CurrentFrame}", landmarks.Landmark.Count, _calculator?.CurrentFrame);
+        if (landmarks != null)
+            _logger.Info("Got a list of {Count} landmarks at frame {CurrentFrame}", landmarks.Landmark.Count,
+                _calculator?.CurrentFrame);
     }
 
     /// <summary>
@@ -100,23 +142,18 @@ public class PoseDetector : INotifyPropertyChanged
         _converter?.Dispose();
         _calculator?.Dispose();
     }
+
     /// <summary>
     /// 
     /// </summary>
-    /// <returns></returns>
-    public IImage? CreateLandMarkedImage()
-    {
-        using var ms = new MemoryStream();
-       _image.SaveAsBmp(ms);
-       ms.Position = 0;
-       var bitmap = new Bitmap(ms);
-       return bitmap;
-    }
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="propertyName"></param>
     [NotifyPropertyChangedInvocator]
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

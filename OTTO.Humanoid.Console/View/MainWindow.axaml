@@ -3,9 +3,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OTTO.Humanoid.Console.ViewModel"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480" CanResize="False"
         x:Class="OTTO.Humanoid.Console.View.MainWindow"
-        Title="MainWindow">
+        Title="MainWindow" >
     <Window.DataContext>  
         <local:MainWindowViewModel/>  
     </Window.DataContext>        

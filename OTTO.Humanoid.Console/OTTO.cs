@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿/*using System.Diagnostics;
 using System.Text;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -58,7 +58,7 @@ public class Otto : BackgroundService
                 try
                 {
                     poseDetector.GetPose();
-                    LandMarkedImage = poseDetector.CreateLandMarkedImage();
+                    LandMarkedImage = poseDetector.MyImage;
                     LandmarkList = poseDetector.Landmarks;
                     if (LandmarkList == null) continue;
                     var message = new MqttApplicationMessageBuilder().WithTopic("OTTO/test")
@@ -104,4 +104,4 @@ public class Otto : BackgroundService
         _scanThread.Start();
         return Task.CompletedTask;
     }
-}
+}*/
