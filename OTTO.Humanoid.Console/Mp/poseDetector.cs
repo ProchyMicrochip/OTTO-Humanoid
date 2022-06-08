@@ -74,14 +74,14 @@ public sealed class PoseDetector : INotifyPropertyChanged
         {
             _calculator = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
                 ? new BlazePoseGpuCalculator()
-                : new BlazePoseCpuCalculator();
+                : new BlazePoseCpuCalculator(false,false,2,false);
         }
         catch (Exception e)
         {
             _logger.Error(e.Message);
             throw;
         }
-        //_calculator.OnResult += HandleLandmarks;
+        _calculator.OnResult += HandleLandmarks;
         _calculator.Run();
         var poseThread = new Thread(PoseThreadLoop)
         {
@@ -144,7 +144,7 @@ public sealed class PoseDetector : INotifyPropertyChanged
         }
         
     }
-/*
+
     private void HandleLandmarks(object? sender, NormalizedLandmarkList? landmarks)
     {
         Landmarks = landmarks;
@@ -152,7 +152,7 @@ public sealed class PoseDetector : INotifyPropertyChanged
             _logger.Info("Got a list of {Count} landmarks at frame {CurrentFrame}", landmarks.Landmark.Count,
                 _calculator?.CurrentFrame);
     }
-*/
+
 
     /// <summary>
     /// 
