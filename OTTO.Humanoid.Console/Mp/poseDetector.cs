@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Mediapipe.Net.Calculators;
 using Mediapipe.Net.Framework.Format;
+using Mediapipe.Net.Framework.Packet;
 using Mediapipe.Net.Framework.Protobuf;
 using NLog;
 using SeeShark;
@@ -24,7 +25,7 @@ public sealed class PoseDetector : INotifyPropertyChanged
 
     private static Camera? _camera;
     private static FrameConverter? _converter;
-    private static BlazePoseCpuCalculator? _calculator;
+    private static Calculator<NormalizedLandmarkListPacket, NormalizedLandmarkList>? _calculator;
     private readonly Logger _logger;
     private readonly CancellationToken _stoppingToken;
     /// <summary>
@@ -69,7 +70,17 @@ public sealed class PoseDetector : INotifyPropertyChanged
         using var manager = new CameraManager();
         _camera = manager.GetDevice(cameraInfo);
         _logger.Info("Using camera {Info}",_camera.Info);
-        _calculator = new BlazePoseCpuCalculator();
+        try
+        {
+            _calculator = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                ? new BlazePoseGpuCalculator()
+                : new BlazePoseCpuCalculator();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            throw;
+        }
         //_calculator.OnResult += HandleLandmarks;
         _calculator.Run();
         var poseThread = new Thread(PoseThreadLoop)
@@ -79,14 +90,14 @@ public sealed class PoseDetector : INotifyPropertyChanged
         poseThread.Start();
     }
 
-    private async void PoseThreadLoop()
+    private void PoseThreadLoop()
     {
         while (!_stoppingToken.IsCancellationRequested)
         {
             //try
             //{
                 GetPose();
-                await Task.Delay(20, _stoppingToken);
+                //await Task.Delay(20, _stoppingToken);
                 /*}
                 catch (Exception exception)
                 {
@@ -99,7 +110,7 @@ public sealed class PoseDetector : INotifyPropertyChanged
     /// <summary>
     /// 
     /// </summary>
-    public void GetPose()
+    private void GetPose()
     {
         if (_camera == null) return;
         var frame = _camera.GetFrame();
@@ -117,18 +128,23 @@ public sealed class PoseDetector : INotifyPropertyChanged
                 var img = _calculator.Send(imgframe);
                 //var pixeldata = img.MutablePixelData;
                 using var ms = new MemoryStream();
-                var safearray = new byte[img.PixelDataSize];
-                Marshal.Copy((IntPtr)img.MutablePixelData,safearray,0,img.PixelDataSize );
-                var imageframe = Image.LoadPixelData<Rgb24>(safearray, cFrame.Width, cFrame.Height);
-                imageframe.SaveAsBmp(ms);
+                if (img != null)
+                {
+                    var safearray = new byte[img.PixelDataSize];
+                    Marshal.Copy((IntPtr)img.MutablePixelData,safearray,0,img.PixelDataSize );
+                    var imageframe = Image.LoadPixelData<Rgb24>(safearray, cFrame.Width, cFrame.Height);
+                    imageframe.SaveAsBmp(ms);
+                }
+
                 ms.Position = 0;
                 var bitmap = new Bitmap(ms);
                 Currentimage = bitmap;
-                img.Dispose();
+                img?.Dispose();
             }
         }
         
     }
+/*
     private void HandleLandmarks(object? sender, NormalizedLandmarkList? landmarks)
     {
         Landmarks = landmarks;
@@ -136,6 +152,7 @@ public sealed class PoseDetector : INotifyPropertyChanged
             _logger.Info("Got a list of {Count} landmarks at frame {CurrentFrame}", landmarks.Landmark.Count,
                 _calculator?.CurrentFrame);
     }
+*/
 
     /// <summary>
     /// 

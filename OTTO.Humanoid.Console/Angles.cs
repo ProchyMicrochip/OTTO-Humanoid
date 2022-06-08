@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace OTTO.Humanoid.Console;
+﻿namespace OTTO.Humanoid.Console;
 
 /// <summary>
 /// 
