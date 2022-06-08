@@ -38,6 +38,9 @@
         <None Update="mediapipe\**\*.*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="ViewModel\pose_tracking_cpu.pbtxt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     
 

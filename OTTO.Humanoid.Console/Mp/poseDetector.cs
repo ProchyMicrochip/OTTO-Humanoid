@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Mediapipe.Net.Calculators;
 using Mediapipe.Net.Framework.Format;
@@ -11,7 +12,6 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using IImage = Avalonia.Media.IImage;
-using Image = SixLabors.ImageSharp.Image;
 using ImageFrame = Mediapipe.Net.Framework.Format.ImageFrame;
 
 namespace OTTO.Humanoid.Console.Mp;
@@ -70,7 +70,7 @@ public sealed class PoseDetector : INotifyPropertyChanged
         _camera = manager.GetDevice(cameraInfo);
         _logger.Info("Using camera {Info}",_camera.Info);
         _calculator = new BlazePoseCpuCalculator();
-        _calculator.OnResult += HandleLandmarks;
+        //_calculator.OnResult += HandleLandmarks;
         _calculator.Run();
         var poseThread = new Thread(PoseThreadLoop)
         {
@@ -103,7 +103,7 @@ public sealed class PoseDetector : INotifyPropertyChanged
     {
         if (_camera == null) return;
         var frame = _camera.GetFrame();
-        _converter ??= new FrameConverter(frame, PixelFormat.Rgb24);
+        _converter ??= new FrameConverter(frame,1280,720, PixelFormat.Rgb24);
 
         var cFrame = _converter.Convert(frame);
         
@@ -112,14 +112,22 @@ public sealed class PoseDetector : INotifyPropertyChanged
         
         if (_calculator != null)
         {
-            using var img = _calculator.Send(imgframe);
+            unsafe
+            {
+                var img = _calculator.Send(imgframe);
+                //var pixeldata = img.MutablePixelData;
+                using var ms = new MemoryStream();
+                var safearray = new byte[img.PixelDataSize];
+                Marshal.Copy((IntPtr)img.MutablePixelData,safearray,0,img.PixelDataSize );
+                var imageframe = Image.LoadPixelData<Rgb24>(safearray, cFrame.Width, cFrame.Height);
+                imageframe.SaveAsBmp(ms);
+                ms.Position = 0;
+                var bitmap = new Bitmap(ms);
+                Currentimage = bitmap;
+                img.Dispose();
+            }
         }
-        var image = Image.LoadPixelData<Rgb24>(cFrame.RawData, cFrame.Width, cFrame.Height);
-        using var ms = new MemoryStream();
-        image.SaveAsBmp(ms);
-        ms.Position = 0;
-        var bitmap = new Bitmap(ms);
-        Currentimage = bitmap;
+        
     }
     private void HandleLandmarks(object? sender, NormalizedLandmarkList? landmarks)
     {
