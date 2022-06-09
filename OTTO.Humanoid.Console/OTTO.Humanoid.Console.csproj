@@ -36,7 +36,7 @@
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="mediapipe\**\*.*">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="ViewModel\pose_tracking_cpu.pbtxt">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
