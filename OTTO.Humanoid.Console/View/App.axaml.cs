@@ -12,6 +12,7 @@ public class App : Application
         /// <inheritdoc />
         public override void Initialize()
         {
+            System.Console.WriteLine("inicialization started");
             AvaloniaXamlLoader.Load(this);
         }
 
@@ -20,6 +21,7 @@ public class App : Application
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
             {
+                System.Console.WriteLine("inicialization completed");
                 desktopLifetime.MainWindow = new MainWindow();
             }
         }

@@ -81,5 +81,5 @@ public static class Program
             .UseNLog()
             .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings.json"));
 
-    private static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>().LogToTrace().UsePlatformDetect();
+    private static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>().LogToTrace();
 }

@@ -59,6 +59,9 @@ public class MainWindowViewModel : INotifyPropertyChanged
     private IImage? _image;
     private ImmutableList<CameraInfo> _camerainfos;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public ImmutableList<CameraInfo> CameraInfos
     {
         get => _camerainfos;
