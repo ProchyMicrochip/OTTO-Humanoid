@@ -28,13 +28,30 @@
 #   }
 
 type: "PoseLandmarkCpu"
-
+node {
+  calculator: "ConstantSidePacketCalculator"
+  output_side_packet: "PACKET:smooth_landmarks"
+  node_options: {
+    [type.googleapis.com/mediapipe.ConstantSidePacketCalculatorOptions]: {
+      packet { bool_value: false }
+    }
+  }
+}
+node {
+  calculator: "ConstantSidePacketCalculator"
+  output_side_packet: "PACKET:use_prev_landmarks"
+  node_options: {
+    [type.googleapis.com/mediapipe.ConstantSidePacketCalculatorOptions]: {
+      packet { bool_value: false }
+    }
+  }
+}
 # CPU image. (ImageFrame)
 input_stream: "IMAGE:image"
 
 # Whether to filter landmarks across different input images to reduce jitter.
 # If unspecified, functions as set to true. (bool)
-input_side_packet: "SMOOTH_LANDMARKS:smooth_landmarks"
+#input_side_packet: "SMOOTH_LANDMARKS:smooth_landmarks"
 
 # Whether to predict the segmentation mask. If unspecified, functions as set to
 # false. (bool)
@@ -51,7 +68,7 @@ input_side_packet: "MODEL_COMPLEXITY:model_complexity"
 
 # Whether landmarks on the previous image should be used to help localize
 # landmarks on the current image. (bool)
-input_side_packet: "USE_PREV_LANDMARKS:use_prev_landmarks"
+#input_side_packet: "USE_PREV_LANDMARKS:use_prev_landmarks"
 
 # Pose landmarks. (NormalizedLandmarkList)
 # We have 33 landmarks (see pose_landmark_topology.svg), and there are other

@@ -114,7 +114,7 @@ public sealed class PoseDetector : INotifyPropertyChanged
     {
         if (_camera == null) return;
         var frame = _camera.GetFrame();
-        _converter ??= new FrameConverter(frame,1280,720, PixelFormat.Rgb24);
+        _converter ??= new FrameConverter(frame,320,320, PixelFormat.Rgb24);
 
         var cFrame = _converter.Convert(frame);
         
