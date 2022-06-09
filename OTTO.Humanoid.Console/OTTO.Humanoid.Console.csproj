@@ -11,7 +11,7 @@
     <ItemGroup>
       <PackageReference Include="Avalonia" Version="0.10.14" />
       <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.14" />
-      <PackageReference Include="Avalonia.Desktop" Version="0.10.14" />
+      <PackageReference Include="Avalonia.Skia.Linux.Natives" Version="1.68.0.2" />
       <PackageReference Include="EntityFramework" Version="6.4.4" />
       <PackageReference Include="Google.Protobuf" Version="3.21.1" />
       <PackageReference Include="Mediapipe.Net.Framework.Protobuf" Version="0.8.9.1" />
