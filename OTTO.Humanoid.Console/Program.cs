@@ -12,6 +12,7 @@ using NLog.Fluent;
 using OTTO.Humanoid.Console.Mp;
 using OTTO.Humanoid.Console.Mqtt;
 using OTTO.Humanoid.Console.View;
+using SkiaSharp;
 
 namespace OTTO.Humanoid.Console;
 
@@ -42,6 +43,8 @@ public static class Program
 
         try
         {
+            System.Console.WriteLine(SKTypeface.Default.FamilyName);
+            System.Console.WriteLine(SKTypeface.FromFamilyName("Sans").FamilyName);
             _backgroundHostTask = CreateHostBuilder(args).Build().RunAsync();
             _uiTask = Task.Run(() =>
             {
