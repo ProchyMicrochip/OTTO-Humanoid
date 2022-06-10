@@ -32,7 +32,7 @@ public class MainWindow : Window
         var path = Directory.GetCurrentDirectory() + @"\ffmpeg\v5.0_x64\";
         //FFmpegManager.SetupFFmpeg(path,@"/usr/lib");
         System.Console.WriteLine("FFMpeg");
-        FFmpegManager.SetupFFmpeg(@"/usr/lib");
+        FFmpegManager.SetupFFmpeg(@"/usr/lib",@"/usr/bin");
         System.Console.WriteLine("Glog");
         Glog.Initialize("stuff");
         // = new Otto(new NullLogger<Otto>());
