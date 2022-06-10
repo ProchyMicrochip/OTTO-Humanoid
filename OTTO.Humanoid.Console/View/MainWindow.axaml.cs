@@ -115,6 +115,7 @@ private void SelectingItemsControl_OnSelectionChanged(object? sender, SelectionC
     if (_detector != null) return;
     if (e.AddedItems[0] == null ) return;
     _detector = new PoseDetector(LogManager.GetCurrentClassLogger(),(CameraInfo)e.AddedItems[0],CancellationToken.None);
+    System.Console.WriteLine("detector started");
     _detector.PropertyChanged += DetectorOnPropertyChanged;
 }
 }
