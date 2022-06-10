@@ -14,14 +14,17 @@ public class App : Application
         {
             System.Console.WriteLine("Inicialization");
             AvaloniaXamlLoader.Load(this);
+            System.Console.WriteLine("Inicialization Completed");
         }
 
         /// <inheritdoc />
         public override void OnFrameworkInitializationCompleted()
         {
+            System.Console.WriteLine("Mainwindow starting");
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
             {
                 desktopLifetime.MainWindow = new MainWindow();
             }
+            System.Console.WriteLine("Mainwindow started");
         }
     }
