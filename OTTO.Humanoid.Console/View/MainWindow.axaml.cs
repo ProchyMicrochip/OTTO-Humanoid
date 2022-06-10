@@ -30,12 +30,18 @@ public class MainWindow : Window
     public MainWindow()
     {
         var path = Directory.GetCurrentDirectory() + @"\ffmpeg\v5.0_x64\";
-        FFmpegManager.SetupFFmpeg(path,@"/usr/lib");
+        //FFmpegManager.SetupFFmpeg(path,@"/usr/lib");
+        System.Console.WriteLine("FFMpeg");
+        FFmpegManager.SetupFFmpeg(@"/usr/lib");
+        System.Console.WriteLine("Glog");
         Glog.Initialize("stuff");
         // = new Otto(new NullLogger<Otto>());
         //_otto.StartAsync(new CancellationToken());
+        System.Console.WriteLine("init");
         InitializeComponent();
+        System.Console.WriteLine("datacontext");
         _viewModel = (MainWindowViewModel)DataContext ?? throw new InvalidOperationException();
+        System.Console.WriteLine("CamManager");
         using var manager = new CameraManager();
         _viewModel.CameraInfos = manager.Devices;
         var maincanvas = this.FindControl<Canvas>("Mycanvas");
@@ -85,7 +91,7 @@ public class MainWindow : Window
         
     }
 
-    
+ 
    
 
     
@@ -109,6 +115,6 @@ private void SelectingItemsControl_OnSelectionChanged(object? sender, SelectionC
     if (_detector != null) return;
     if (e.AddedItems[0] == null ) return;
     _detector = new PoseDetector(LogManager.GetCurrentClassLogger(),(CameraInfo)e.AddedItems[0],CancellationToken.None);
-    _detector.PropertyChanged += DetectorOnPropertyChanged;
+    //_detector.PropertyChanged += DetectorOnPropertyChanged;
 }
 }
