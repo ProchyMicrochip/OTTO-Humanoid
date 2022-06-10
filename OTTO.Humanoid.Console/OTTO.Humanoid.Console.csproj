@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Avalonia" Version="0.10.14" />
-      <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.14" />
+      <PackageReference Include="Avalonia" Version="0.10.15" />
+      <PackageReference Include="Avalonia.Diagnostics" Version="0.10.15" />
       <PackageReference Include="Avalonia.Skia.Linux.Natives" Version="1.68.0.2" />
       <PackageReference Include="EntityFramework" Version="6.4.4" />
       <PackageReference Include="Google.Protobuf" Version="3.21.1" />
