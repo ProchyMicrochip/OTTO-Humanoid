@@ -72,11 +72,11 @@ public sealed class PoseDetector : INotifyPropertyChanged
         _logger.Info("Using camera {Info}",_camera.Info);
         try
         {
-            //_calculator = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-            //    ? new BlazePoseGpuCalculator()
-            //    : new BlazePoseCpuCalculator(false,false,2,false);
+            _calculator = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                ? new BlazePoseGpuCalculator()
+                : new BlazePoseCpuCalculator(false,false,2,false);
             
-            _calculator= new BlazePoseCpuCalculator(false,false,2,false);
+            //_calculator= new BlazePoseCpuCalculator(false,false,2,false);
         }
         catch (Exception e)
         {
