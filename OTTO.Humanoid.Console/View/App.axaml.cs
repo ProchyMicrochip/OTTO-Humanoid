@@ -12,6 +12,7 @@ public class App : Application
         /// <inheritdoc />
         public override void Initialize()
         {
+            System.Console.WriteLine("Inicialization");
             AvaloniaXamlLoader.Load(this);
         }
 
