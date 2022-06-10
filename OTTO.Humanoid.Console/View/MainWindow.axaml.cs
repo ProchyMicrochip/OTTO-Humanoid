@@ -32,7 +32,7 @@ public class MainWindow : Window
         var path = Directory.GetCurrentDirectory() + @"\ffmpeg\v5.0_x64\";
         //FFmpegManager.SetupFFmpeg(path,@"/usr/lib");
         System.Console.WriteLine("FFMpeg");
-        FFmpegManager.SetupFFmpeg(@"/usr/lib/x86_64-linux-gnu");
+        FFmpegManager.SetupFFmpeg(path,@"/usr/lib/x86_64-linux-gnu");
         System.Console.WriteLine("Glog");
         Glog.Initialize("stuff");
         // = new Otto(new NullLogger<Otto>());
@@ -115,6 +115,6 @@ private void SelectingItemsControl_OnSelectionChanged(object? sender, SelectionC
     if (_detector != null) return;
     if (e.AddedItems[0] == null ) return;
     _detector = new PoseDetector(LogManager.GetCurrentClassLogger(),(CameraInfo)e.AddedItems[0],CancellationToken.None);
-    //_detector.PropertyChanged += DetectorOnPropertyChanged;
+    _detector.PropertyChanged += DetectorOnPropertyChanged;
 }
 }
