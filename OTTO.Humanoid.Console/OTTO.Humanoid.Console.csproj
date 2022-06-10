@@ -15,7 +15,6 @@
       <PackageReference Include="EntityFramework" Version="6.4.4" />
       <PackageReference Include="Google.Protobuf" Version="3.21.1" />
       <PackageReference Include="Mediapipe.Net.Framework.Protobuf" Version="0.8.9.1" />
-      <PackageReference Include="Mediapipe.Net.Runtime.CPU" Version="0.8.9.1" />
       <PackageReference Include="Mediapipe.Net.Runtime.GPU" Version="0.8.9.1" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0-preview.4.22229.4" />
       <PackageReference Include="MQTTnet" Version="3.1.2" />
